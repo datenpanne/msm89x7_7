@@ -92,8 +92,7 @@
 		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
 
 		pinctrl-0 = <&speaker_amp_default>;
-		//pinctrl-1 = <&speaker_amp_sleep>;
-		pinctrl-names = "default";//,"sleep";
+		pinctrl-names = "default";
 
 		sound-name-prefix = "Speaker Amp";
 	};
@@ -410,15 +409,6 @@
 	};
 };
 
-/*
-&sdc2_cmd_default {
-	drive-strength = <12>;
-};
-
-&sdc2_data_default {
-	drive-strength = <12>;
-};*/
-
 &sdhc_1 {
 	vmmc-supply = <&pm8937_l8>;
 	vqmmc-supply = <&pm8937_l5>;
@@ -485,20 +475,6 @@
 		bias-pull-up;
 	};
 
-	/*headphones_switch_sleep: headphones-switch-sleep-state {
-		pins = "gpio32";
-		function = "gpio";
-		drive-strength = <2>;
-		output-low;
-	};*/
-
-	/*lcd_bl_en_default: lcd-bl-en-default-state {
-		pins = "gpio132","gpio24";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-	};*/
-
 	panel_default: panel-default-state {
 		pins = "gpio24","gpio60","gpio132";
 		function = "gpio";
@@ -521,13 +497,6 @@
 		//output-high;
 	};
 
-	/*speaker_amp_sleep: speaker-amp-sleep-state {
-		pins = "gpio85";
-		function = "gpio";
-		drive-strength = <2>;
-		output-low;
-	};*/
-
 	touch_irq_default: touch-irq-default-state {
 		pins = "gpio41";
 		function = "gpio";
@@ -542,13 +511,6 @@
 		drive-strength = <2>;
 		output-low;
 	};
-
-/*	usb_id_default: usb-id-default {
-		pins = "gpio97","gpio131";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-up;
-	};*/
 
 	pinctrl_otg_default: otg-default-state {
 		function = "gpio";
@@ -574,15 +536,6 @@
 		bias-pull-up;
 	};
 };
-
-&usb_hs_phy {
-	vdd-supply = <&pm8937_l2>;
-	vdda1p8-supply = <&pm8937_l7>;
-	vdda3p3-supply = <&pm8937_l13>;
-
-	extcon = <&usb_id>;
-	status = "okay";
-};*/
 
 &usb {
 	dr_mode = "peripheral";
