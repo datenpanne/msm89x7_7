@@ -38,13 +38,14 @@ struct malata_gama_wuxga *to_malata_gama_wuxga(struct drm_panel *panel)
 
 static void malata_gama_wuxga_reset(struct malata_gama_wuxga *ctx)
 {
-	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+	gpiod_set_value_cansleep(ctx->reset_gpio, 1); // Low
 	msleep(30);
-	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
+	gpiod_set_value_cansleep(ctx->reset_gpio, 0); // High
 	msleep(20);
-	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+	gpiod_set_value_cansleep(ctx->reset_gpio, 1); // Low
 	msleep(20);
-	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
+	gpiod_set_value_cansleep(ctx->reset_gpio, 0); // High
+	msleep(10);
 }
 
 static int malata_gama_wuxga_on(struct malata_gama_wuxga *ctx)
@@ -53,15 +54,15 @@ static int malata_gama_wuxga_on(struct malata_gama_wuxga *ctx)
 
 	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
 
-	msleep(24);
-
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xb0, 0x00);
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xbf, 0x04);
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc0, 0x00);
+
 	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
 	mipi_dsi_msleep(&dsi_ctx, 120);
+
 	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
-	mipi_dsi_msleep(&dsi_ctx, 80);
+	mipi_dsi_msleep(&dsi_ctx, 20);
 
 	return dsi_ctx.accum_err;
 }
@@ -210,7 +211,7 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 
 	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST | MIPI_DSI_MODE_LPM;
+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_LPM;
 
 	ctx->panel.prepare_prev_first = true;
 
@@ -242,7 +243,8 @@ static void malata_gama_wuxga_remove(struct mipi_dsi_device *dsi)
 }
 
 static const struct of_device_id malata_gama_wuxga_of_match[] = {
-	{ .compatible = "malata,gama-wuxga" }, // FIXME
+	{ .compatible = "medion,malata-panel" },
+	{ .compatible = "malata,gama-wuxga" },
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, malata_gama_wuxga_of_match);
