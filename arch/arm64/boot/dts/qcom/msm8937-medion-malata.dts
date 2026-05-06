@@ -58,7 +58,7 @@
 
 	backlight: backlight {
 		compatible = "pwm-backlight";
-		pwms = <&pm8937_pwm 0 100000>;
+		pwms = <&pm8937_pwm 3 100000>;
 
 		brightness-levels = <0 255>;
 		num-interpolated-steps = <255>;
@@ -258,6 +258,12 @@
 &pm8937_pwm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pm8937_mpp4_backlight>;
+
+	/* Hier definieren wir den Kanal für MPP 4 */
+	channel@3 {
+		reg = <3>;          /* Index für MPP 4 bei dieser PMIC */
+		qcom,mode = "pwm";  /* Aktiviert die PWM-Logik für diesen Kanal */
+	};
 
 	status = "okay";
 };
