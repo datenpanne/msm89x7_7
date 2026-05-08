@@ -96,7 +96,7 @@
 
 		sound-name-prefix = "Speaker Amp";
 	};
-	
+
 	reserved-memory {
 		framebuffer: memory@90001000 {
 			reg = <0x0 0x90001000 0x0 (1200 * 1920 * 3)>;
@@ -134,7 +134,7 @@
 		reg = <0x5d>;
 
 		interrupts-extended = <41 IRQ_TYPE_EDGE_FALLING>;
-		irq-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
+		//irq-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
 
 		AVDD28-supply = <&pm8937_l17>;
@@ -170,15 +170,105 @@
 	};
 };
 
+&camss {
+	compatible = "qcom,msm8937-camss";
+	vdda-supply = <&pm8937_l2>;
+	status = "okay";
+
+	ports {
+		port@0 {
+			reg = <0>;
+
+			csiphy0_ep: endpoint {
+				clock-lanes = <7>;
+				data-lanes = <0 1 2 3>;
+				remote-endpoint = <&rear_cam_ep>;
+			};
+		};
+
+		port@1 {
+			reg = <1>;
+
+			csiphy1_ep: endpoint {
+				clock-lanes = <7>;
+				data-lanes = <0 1>;
+				remote-endpoint = <&front_cam_ep>;
+			};
+		};
+	};
+};
+
+&cci {
+	pinctrl-0 = <&cci0_default>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
+
+&cci_i2c0 {
+	camera-sensor@10 {
+		compatible = "ovti,ov8856";
+
+		reg = <0x10>;
+
+		clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
+		clock-frequency = <24000000>;
+
+		pinctrl-0 = <&cam_sensor_rear_default>, <&camss_mclk0_default>;
+		pinctrl-names = "default";
+
+		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
+
+		avdd-supply= <&pm8937_l22>;
+		dvdd-supply = <&pm8937_l23>;
+		vio-supply = <&pm8937_l6>;
+		aux-supply = <&pm8937_l17>;
+
+		orientation = <1>;
+		rotation = <270>;
+
+		port {
+			rear_cam_ep: endpoint {
+				data-lanes = <0 1 2 3>;
+				remote-endpoint = <&csiphy0_ep>;
+			};
+		};
+	};
+
+	camera-sensor@36 {{ // Front camera
+		compatible = "galaxycore,gc2145";
+
+		reg = <0x36>;
+
+		clocks = <&gcc GCC_CAMSS_MCLK2_CLK>;
+
+		pinctrl-0 = <&cam_sensor_front_default>, <&camss_mclk2_default>;
+		pinctrl-names = "default";
+
+		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
+
+		avdd-supply= <&pm8937_l22>;
+		dvdd-supply = <&pm8937_l23>;
+		dovdd-supply = <&pm8937_l6>;
+
+		orientation = <0>;
+		rotation = <90>;
+
+		port {
+			front_cam_ep: endpoint {
+				data-lanes = <0 1>;
+				remote-endpoint = <&csiphy1_ep>;
+				link-frequencies = /bits/ 64 <450000000>;
+			};
+		};
+	};
+};
+
 &gpu {
 	status = "okay";
 };
 
 &lpass_codec {
-	status = "okay";
-};
-
-&mba_mem {
 	status = "okay";
 };
 
@@ -226,18 +316,6 @@
 	status = "okay";
 };
 
-&modem {
-	pll-supply = <&pm8937_l7>;
-
-	status = "okay";
-};
-
-&mpss_mem {
-	reg = <0x0 0x86800000 0x0 0x5000000>;
-
-	status = "okay";
-};
-
 &pm8937_mpps {
 	pm8937_mpp4_backlight: mpp4-state {
 		pins = "mpp4";
@@ -262,6 +340,7 @@
 };
 
 &pm8937_spmi_regulators {
+	/* APC */
 	pm8937_s5: s5 {
 		regulator-min-microvolt = <1050000>;
 		regulator-max-microvolt = <1350000>;
@@ -274,6 +353,21 @@
 	monitored-battery = <&battery>;
 	power-supplies = <&pmi8950_smbcharger>;
 	status = "okay";
+};
+
+&pmi8950_flash {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	led@0 {
+		reg = <0>;
+		function = LED_FUNCTION_FLASH;
+		color = <LED_COLOR_ID_WHITE>;
+		led-max-microamp = <62500>;
+		flash-max-microamp = <1000000>;
+		flash-max-timeout-us = <1280000>;
+	};
 };
 
 &pmi8950_smbcharger {
@@ -405,6 +499,7 @@
 &sdhc_1 {
 	vmmc-supply = <&pm8937_l8>;
 	vqmmc-supply = <&pm8937_l5>;
+
 	status = "okay";
 };
 
@@ -415,6 +510,7 @@
 	pinctrl-0 = <&sdc2_default &sdc2_cd_default>;
 	pinctrl-1 = <&sdc2_sleep &sdc2_cd_default>;
 	pinctrl-names = "default", "sleep";
+
 	status = "okay";
 };
 
@@ -454,6 +550,20 @@
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <20 4>;
 
+	cam_sensor_front_default: cam-sensor-front-default-state {
+		pins = "gpio39", "gpio40";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	cam_sensor_rear_default: cam-sensor-rear-default-state {
+		pins = "gpio35", "gpio36";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
 	gpio_keys_default: gpio-keys-default-state {
 		pins = "gpio91";
 		function = "gpio";
@@ -487,22 +597,23 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-		//output-high;
 	};
 
-	touch_irq_default: touch-irq-default-state {
+	/*touch_irq_default: touch-irq-default-state {
 		pins = "gpio41";
 		function = "gpio";
 		drive-strength = <2>;
 		input-enable;
 		bias-disable;
-	};
+	};*/
 
 	touch_rst_default: touch-rst-default-state {
-		pins = "gpio40";
+		pins = "gpio40", "gpio41";
 		function = "gpio";
-		drive-strength = <2>;
-		output-low;
+		drive-strength = <8>;
+		bias-pull-up;
+		//drive-strength = <2>;
+		//output-low;
 	};
 };
 
@@ -522,7 +633,7 @@
 
 &wcd_codec {
 	qcom,hphl-jack-type-normally-open;
-	qcom,micbias-lvl = <2800>;
+	//qcom,micbias-lvl = <2800>;
 	qcom,mbhc-vthreshold-high = <75 225 450 510 540>;
 	qcom,mbhc-vthreshold-low = <25 200 325 500 530>;
 	qcom,micbias1-ext-cap;
@@ -535,10 +646,11 @@
 
 &wcnss {
 	vddpx-supply = <&pm8937_l5>;
+
 	status = "okay";
 };
 
-&wcnss_iris { //fertig
+&wcnss_iris {
 	compatible = "qcom,wcn3660b";
 	vddxo-supply = <&pm8937_l7>;
 	vddrfa-supply = <&pm8937_l19>;
