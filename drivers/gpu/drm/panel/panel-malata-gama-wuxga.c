@@ -97,15 +97,8 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
 	usleep_range(100, 150);
 
-	/*ret = mipi_dsi_dcs_nop(ctx->dsi);
-	if (ret < 0) {
-		dev_err(dev, "Failed to send NOP: %d\n", ret);
-	}
-	usleep_range(1000, 2000);*/
-
 	malata_gama_wuxga_reset(ctx);
 
-	//msleep(20);
 	gpiod_set_value(ctx->blen_gpio, 1);
 
 	ret = malata_gama_wuxga_on(ctx);
@@ -115,7 +108,6 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 		regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
 		return ret;
 	}
-	//mipi_dsi_msleep(&dsi_ctx, 150);
 	
 	return 0;
 }
@@ -211,7 +203,7 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 
 	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_LPM;
+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULS | MIPI_DSI_MODE_LPM;
 
 	ctx->panel.prepare_prev_first = true;
 
