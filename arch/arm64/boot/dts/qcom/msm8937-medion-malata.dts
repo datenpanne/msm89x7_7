@@ -112,10 +112,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
-	usb_vbus: extcon-usb-dummy {
-		compatible = "linux,extcon-usb-dummy";
-	};
 };
 
 &adsp {
@@ -273,17 +269,17 @@
 		regulator-boot-on;
 	};
 };
-/*
+
 &pmi8950_fg {
 	monitored-battery = <&battery>;
-	//power-supplies = <&pmi8950_smbcharger>;
+	power-supplies = <&pmi8950_smbcharger>;
 	status = "okay";
 };
 
 &pmi8950_smbcharger {
 	monitored-battery = <&battery>;
 	status = "okay";
-};*/
+};
 
 &rpm_requests {
 	regulators-0 {
@@ -508,36 +504,12 @@
 		drive-strength = <2>;
 		output-low;
 	};
-
-	pinctrl_otg_default: otg-default-state {
-		function = "gpio";
-		pins = "gpio97";
-		output-high;
-	};
-
-	pinctrl_otg_device: otg-device-state {
-		function = "gpio";
-		pins = "gpio97";
-		output-low;
-	};
-
-	pinctrl_otg_host: otg-host-state {
-		function = "gpio";
-		pins = "gpio97";
-		output-low;
-	};
-
-	pinctrl_typec: pinctrl-typec-state {
-		function = "gpio";
-		pins = "gpio131";
-		bias-pull-up;
-	};
 };
 
 &usb {
-	dr_mode = "peripheral";
-	//extcon = <&pmi8950_smbcharger>, <&usb_vbus>;
-	extcon = <&usb_vbus>;
+	dr_mode = "otg";
+	extcon = <&pmi8950_smbcharger>, <&pmi8950_smbcharger>;
+	vbus-supply = <&otg_vbus>;
 	status = "okay";
 };
 
