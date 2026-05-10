@@ -613,7 +613,7 @@
 		bias-disable;
 	};*/
 
-	tsp_int_rst_default: tsp-int-reset-default-state 
+	tsp_int_rst_default: tsp-int-reset-default-state {
 		pins = "gpio40", "gpio41";
 		function = "gpio";
 		drive-strength = <8>;
