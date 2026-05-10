@@ -133,15 +133,20 @@
 		compatible = "goodix,gt9271";
 		reg = <0x5d>;
 
-		interrupts-extended = <41 IRQ_TYPE_EDGE_FALLING>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;
+		irq-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&tlmm 40 GPIO_ACTIVE_HIGH>;
+
+		/*interrupts-extended = <41 IRQ_TYPE_EDGE_FALLING>;
 		//irq-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
-		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;*/
 
 		AVDD28-supply = <&pm8937_l17>;
 		VDDIO-supply = <&pm8937_l6>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&touch_rst_default &touch_irq_default>;
+		pinctrl-0 = <&touch_rst_default>;// &touch_irq_default>;
 
 		touchscreen-inverted-y;
 		touchscreen-swapped-x-y;
