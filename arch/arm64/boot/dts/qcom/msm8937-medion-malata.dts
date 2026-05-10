@@ -146,7 +146,7 @@
 		VDDIO-supply = <&pm8937_l6>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&touch_rst_default>;// &touch_irq_default>;
+		pinctrl-0 = <&tsp_int_rst_default>;// &touch_irq_default>;
 
 		touchscreen-inverted-y;
 		touchscreen-swapped-x-y;
@@ -226,14 +226,15 @@
 
 		avdd-supply= <&pm8937_l22>;
 		dvdd-supply = <&pm8937_l23>;
-		vio-supply = <&pm8937_l6>;
-		aux-supply = <&pm8937_l17>;
+		dovdd-supply = <&pm8937_l6>;
 
 		orientation = <1>;
 		rotation = <270>;
 
 		port {
 			rear_cam_ep: endpoint {
+				link-frequencies = /bits/ 64
+					<360000000 180000000>;
 				data-lanes = <0 1 2 3>;
 				remote-endpoint = <&csiphy0_ep>;
 			};
@@ -250,7 +251,7 @@
 		pinctrl-0 = <&cam_sensor_front_default>, <&camss_mclk2_default>;
 		pinctrl-names = "default";
 
-		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&tlmm 50 GPIO_ACTIVE_LOW>;
 
 		avdd-supply= <&pm8937_l22>;
 		dvdd-supply = <&pm8937_l23>;
@@ -556,7 +557,7 @@
 	gpio-reserved-ranges = <0 4>, <20 4>;
 
 	cam_sensor_front_default: cam-sensor-front-default-state {
-		pins = "gpio39", "gpio40";
+		pins = "gpio38", "gpio50";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
@@ -612,7 +613,7 @@
 		bias-disable;
 	};*/
 
-	touch_rst_default: touch-rst-default-state {
+	tsp_int_rst_default: tsp-int-reset-default-state 
 		pins = "gpio40", "gpio41";
 		function = "gpio";
 		drive-strength = <8>;
