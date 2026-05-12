@@ -101,7 +101,8 @@
 		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
 
 		pinctrl-0 = <&speaker_amp_default>;
-		pinctrl-names = "default";
+		pinctrl-1 = <&speaker_amp_sleep>;
+		pinctrl-names = "default","sleep";
 
 		sound-name-prefix = "Speaker Amp";
 	};
@@ -170,9 +171,9 @@
 		Vdd-supply = <&pm8937_l17>;
 		power-gpio = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 
-		pinctrl-names = "default";//,"sleep";
+		pinctrl-names = "default","sleep";
 		pinctrl-0 = <&headphones_switch_default>;
-		//pinctrl-1 = <&headphones_switch_sleep>;
+		pinctrl-1 = <&headphones_switch_sleep>;
 
 		sound-name-prefix = "Headphones Switch";
 	};
@@ -220,14 +221,15 @@
 		reg = <0x7a>;
 
 		clocks = <&gcc GCC_CAMSS_MCLK2_CLK>;
-		clock-frequency = <24000000>;
+		clock-frequency = <19200000>;
 
 		pinctrl-0 = <&cam_sensor_front_default>, <&camss_mclk2_default>;
 		pinctrl-names = "default";
+		assigned-clock-rates = <19200000>;
 
 		reset-gpios = <&tlmm 50 GPIO_ACTIVE_LOW>;
 
-		avdd-supply= <&pm8937_l22>;
+		iovdd-supply= <&pm8937_l22>;
 		dvdd-supply = <&pm8937_l23>;
 		dovdd-supply = <&pm8937_l6>;
 
@@ -238,7 +240,7 @@
 			front_cam_ep: endpoint {
 				data-lanes = <0 1>;
 				remote-endpoint = <&csiphy1_ep>;
-				link-frequencies = /bits/ 64 <450000000>;
+				link-frequencies = /bits/ 64 <120000000 192000000 240000000>;
 			};
 		};
 	};
@@ -249,10 +251,11 @@
 		reg = <0x36>;
 
 		clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
-		clock-frequency = <24000000>;
+		clock-frequency = <19200000>;
 
 		pinctrl-0 = <&cam_sensor_rear_default &camss_mclk0_default>;
 		pinctrl-names = "default";
+		assigned-clock-rates = <19200000>;
 
 		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
 
@@ -265,7 +268,7 @@
 
 		port {
 			rear_cam_ep: endpoint {
-				link-frequencies = /bits/ 64 <360000000>;
+				link-frequencies = /bits/ 64 <360000000 180000000>;
 				data-lanes = <0 1 2 3>;
 				remote-endpoint = <&csiphy0_ep>;
 			};
@@ -326,6 +329,14 @@
 };
 
 &pm8937_mpps {
+	/*pm8937_mpp2_led: mpp2-state {
+		pins = "mpp2";
+		function = "sink";
+
+		output-low;
+		qcom,dtest = <2>; /*qcom,src-sel = <0x05>*/
+	};*/
+
 	pm8937_mpp4_backlight: mpp4-state {
 		pins = "mpp4";
 		function = "digital";      /* qcom,mode = <0x01> */
@@ -363,21 +374,25 @@
 	power-supplies = <&pmi8950_smbcharger>;
 	status = "okay";
 };
+/*
+&pmi8950_pwm {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pm8937_mpp2_led>;
 
-&pmi8950_flash {
-	#address-cells = <1>;
-	#size-cells = <0>;
+	qcom,power-source = <1>;
+
 	status = "okay";
+	
+	led@1 {
+		reg = <1>;
+		color = <LED_COLOR_ID_GREEN>;
+		function = LED_FUNCTION_HEARTBEAT;
+		function-enumerator = <1>;
 
-	led@0 {
-		reg = <0>;
-		function = LED_FUNCTION_FLASH;
-		color = <LED_COLOR_ID_WHITE>;
-		led-max-microamp = <62500>;
-		flash-max-microamp = <1000000>;
-		flash-max-timeout-us = <1280000>;
+		linux,default-trigger = "heartbeat";
+		default-state = "off";
 	};
-};
+}*/
 
 &pmi8950_smbcharger {
 	monitored-battery = <&battery>;
@@ -584,7 +599,14 @@
 		pins = "gpio32";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-pull-up;
+		output-high;
+	};
+
+	headphones_switch_sleep: headphones-switch-sleep-state {
+		pins = "gpio32";
+		function = "gpio";
+		drive-strength = <2>;
+		output-low;
 	};
 
 	panel_default: panel-default-state {
@@ -605,7 +627,14 @@
 		pins = "gpio85";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
+		output-high;
+	};
+
+	speaker_amp_sleep: speaker-amp-sleep-state {
+		pins = "gpio85";
+		function = "gpio";
+		drive-strength = <2>;
+		output-low;
 	};
 
 	touch_irq_default: touch-irq-default-state {
