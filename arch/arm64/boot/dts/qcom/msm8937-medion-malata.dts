@@ -334,7 +334,7 @@
 		function = "sink";
 
 		output-low;
-		qcom,dtest = <2>; /*qcom,src-sel = <0x05>*/
+		//qcom,dtest = <2>;
 	};*/
 
 	pm8937_mpp4_backlight: mpp4-state {
