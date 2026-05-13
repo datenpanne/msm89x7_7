@@ -93,6 +93,7 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 		dev_err(dev, "Failed to enable regulators: %d\n", ret);
 		return ret;
 	}
+	msleep(15);
 
 	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
 	msleep(20);
@@ -126,12 +127,15 @@ static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
 	}
 
 	gpiod_set_value_cansleep(ctx->blen_gpio, 0);
-	usleep_range(1000, 2000);
+	msleep(50);
+	//usleep_range(1000, 2000);
 	
 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-	usleep_range(1000, 3000);
+	//usleep_range(1000, 3000);
+	msleep(30);
 
 	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
+	msleep(15);
 
 	regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
 	usleep_range(1000, 2000);

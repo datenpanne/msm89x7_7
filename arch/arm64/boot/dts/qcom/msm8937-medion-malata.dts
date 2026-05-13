@@ -146,7 +146,8 @@
 		reg = <0x5d>;
 
 		interrupts-extended = <&tlmm 41 IRQ_TYPE_EDGE_FALLING>;
-		
+		irq-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
+
 		/*interrupt-parent = <&tlmm>;
 		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;*/
 		
@@ -188,7 +189,7 @@
 &camss {
 	compatible = "qcom,msm8937-camss";
 	vdda-supply = <&pm8937_l2>;
-	status = "okay";
+	//status = "okay";
 
 	ports {
 		port@0 {
@@ -207,7 +208,8 @@
 	pinctrl-0 = <&cci0_default>;
 	pinctrl-names = "default";
 
-	status = "okay";
+	//status = "okay";
+	
 };
 
 &cci_i2c0 {
