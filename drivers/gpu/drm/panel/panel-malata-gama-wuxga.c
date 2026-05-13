@@ -95,9 +95,11 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 	}
 
 	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
-	usleep_range(100, 150);
+	msleep(20);
+	//usleep_range(100, 150);
 
 	malata_gama_wuxga_reset(ctx);
+	msleep(120);
 
 	gpiod_set_value(ctx->blen_gpio, 1);
 

@@ -145,7 +145,7 @@
 		compatible = "goodix,gt9271";
 		reg = <0x5d>;
 
-		interrupts-extended = <41 IRQ_TYPE_EDGE_FALLING>;
+		interrupts-extended = <&tlmm 41 IRQ_TYPE_EDGE_FALLING>;
 		
 		/*interrupt-parent = <&tlmm>;
 		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;*/
@@ -223,7 +223,7 @@
 		pinctrl-names = "default";
 		assigned-clock-rates = <19200000>;
 
-		reset-gpios = <&tlmm 36 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
 
 		dovdd-supply = <&pm8937_l6>;  // 1.8V
 		avdd-supply = <&pm8937_l22>;  // 2.8V
@@ -643,7 +643,7 @@
 
 &wcd_codec {
 	qcom,hphl-jack-type-normally-open;
-	qcom,micbias-lvl = <2800>;
+	//qcom,micbias-lvl = <2800>;
 	qcom,mbhc-vthreshold-high = <75 225 450 510 540>;
 	qcom,mbhc-vthreshold-low = <25 200 325 500 530>;
 	qcom,micbias1-ext-cap;
