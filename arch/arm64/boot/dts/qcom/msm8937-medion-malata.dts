@@ -145,19 +145,20 @@
 		compatible = "goodix,gt9271";
 		reg = <0x5d>;
 
-		interrupts-extended = <&tlmm 41 IRQ_TYPE_EDGE_FALLING>;
-		irq-gpios = <&tlmm 41 GPIO_ACTIVE_HIGH>;
+		interrupts-extended = <&tlmm 65 IRQ_TYPE_EDGE_FALLING>;
+		irq-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
 
 		/*interrupt-parent = <&tlmm>;
 		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;*/
 		
-		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
 
 		AVDD28-supply = <&pm8937_l17>;
 		VDDIO-supply = <&pm8937_l6>;
 
-		pinctrl-names = "default";
-		pinctrl-0 = <&tsp_int_rst_default &touch_irq_default>;
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&touch_int_default &touch_rst_default>;
+		pinctrl-1 = <&touch_int_sleep &touch_rst_sleep>;
 
 		touchscreen-inverted-y;
 		touchscreen-swapped-x-y;
@@ -609,23 +610,32 @@
 		output-low;
 	};
 
-	touch_irq_default: touch-irq-default-state {
-		pins = "gpio41";
+	touch_int_default: touch-int-default-state {
+		pins = "gpio65";
 		function = "gpio";
-		drive-strength = <2>;
-		input-enable;
+		drive-strength = <8>;
 		bias-pull-up;
-		//bias-disable;
 	};
 
-	tsp_int_rst_default: tsp-int-reset-default-state {
-		pins = "gpio40";//, "gpio41";
+	touch_int_sleep: touch-int-sleep-state {
+		pins = "gpio65";
 		function = "gpio";
 		drive-strength = <2>;
-		//drive-strength = <8>;
-		bias-pull-up;
+		bias-pull-down;
+	};
 
-		//output-low;
+	touch_rst_default: touch-rst-default-state {
+		pins = "gpio64";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	touch_rst_sleep: touch-rst-sleep-state {
+		pins = "gpio64";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
 	};
 };
 
