@@ -89,12 +89,12 @@
 
 	headphones_switch: audio-switch {
 		compatible = "simple-audio-amplifier";
+		enable-gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 
 		pinctrl-0 = <&headphones_switch_default>;
 		pinctrl-names = "default";
-		VCC-supply = <&pm8937_l17>
+		VCC-supply = <&pm8937_l17>;
 
-		enable-gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 		sound-name-prefix = "Headphones Switch";
 	};
 
