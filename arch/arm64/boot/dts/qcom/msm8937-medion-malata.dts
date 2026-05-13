@@ -87,6 +87,17 @@
 		};
 	};
 
+	headphones_switch: audio-switch {
+		compatible = "simple-audio-amplifier";
+
+		pinctrl-0 = <&headphones_switch_default>;
+		pinctrl-names = "default";
+		VCC-supply = <&pm8937_l17>
+
+		enable-gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
+		sound-name-prefix = "Headphones Switch";
+	};
+
 	speaker_amp: audio-amplifier {
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
@@ -153,9 +164,8 @@
 		AVDD28-supply = <&pm8937_l17>;
 		VDDIO-supply = <&pm8937_l6>;
 
-		pinctrl-names = "default";//, "sleep";
+		pinctrl-names = "default";
 		pinctrl-0 = <&touch_int_default &touch_rst_default>;
-		//pinctrl-1 = <&touch_int_sleep &touch_rst_sleep>;
 
 		touchscreen-inverted-y;
 		touchscreen-swapped-x-y;
@@ -166,7 +176,7 @@
 	status = "okay";
 };
 
-&blsp2_i2c1 {
+/*&blsp2_i2c1 {
 	status = "okay";
 
 	headphones_switch: amp@60 {
@@ -182,7 +192,7 @@
 
 		sound-name-prefix = "Headphones Switch";
 	};
-};
+};*/
 
 &camss {
 	compatible = "qcom,msm8937-camss";
@@ -518,12 +528,12 @@
 	audio-routing =
 		"Speaker", "Speaker Amp OUTL",
 		"Speaker", "Speaker Amp OUTR",
-		"Speaker Amp INL", "HPHL",
-		"Speaker Amp INR", "HPHR",
+		"Speaker Amp INL", "HPH_L",
+		"Speaker Amp INR", "HPH_R",
 		"Headphones", "Headphones Switch OUTL",
 		"Headphones", "Headphones Switch OUTR",
-		"Headphones Switch INL", "HPHL",
-		"Headphones Switch INR", "HPHR",
+		"Headphones Switch INL", "HPH_L",
+		"Headphones Switch INR", "HPH_R",
 		"AMIC1", "MIC BIAS External1",
 		"AMIC2", "MIC BIAS Internal2",
 		"AMIC3", "MIC BIAS External1",
@@ -567,8 +577,9 @@
 		pins = "gpio32";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-pull-up;
-		output-high;
+		bias-disable;
+		//bias-pull-up;
+		//output-high;
 	};
 
 	headphones_switch_sleep: headphones-switch-sleep-state {
@@ -611,32 +622,16 @@
 		pins = "gpio65";
 		function = "gpio";
 		drive-strength = <8>;
-		//bias-pull-up;
 		input-enable;
 		bias-disable;
 	};
-
-	/*touch_int_sleep: touch-int-sleep-state {
-		pins = "gpio65";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-down;
-	};*/
 
 	touch_rst_default: touch-rst-default-state {
 		pins = "gpio64";
 		function = "gpio";
 		drive-strength = <8>;
 		output-high;
-		//bias-pull-up;
 	};
-
-	/*touch_rst_sleep: touch-rst-sleep-state {
-		pins = "gpio64";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-down;
-	};*/
 };
 
 &usb {
