@@ -145,10 +145,10 @@
 		compatible = "goodix,gt9271";
 		reg = <0x5d>;
 
-		interrupts-extended = <&tlmm 65 IRQ_TYPE_EDGE_FALLING>;
+		interrupts-extended = <&tlmm 65 IRQ_TYPE_EDGE_RISING>;
 		irq-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
 		
-		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
 
 		AVDD28-supply = <&pm8937_l17>;
 		VDDIO-supply = <&pm8937_l6>;
@@ -627,7 +627,7 @@
 		pins = "gpio64";
 		function = "gpio";
 		drive-strength = <8>;
-		output-low;
+		output-high;
 		//bias-pull-up;
 	};
 
