@@ -73,15 +73,6 @@
 		voltage-max-design-microvolt = <4300000>;
 	};
 
-	cam_vdig_reg: cam-vdig-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "CAM_VDIG";
-		regulator-min-microvolt = <1200000>;
-		regulator-max-microvolt = <1200000>;
-		gpio = <&tlmm 62 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
 
@@ -114,6 +105,16 @@
 		};
 	};
 
+	/*cam_vdig_reg: cam-vdig-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "CAM_VDIG";
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+		gpio = <&tlmm 62 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-always-on;
+	};*/
+
 	vph_pwr: vph-pwr-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vph_pwr";
@@ -143,7 +144,11 @@
 		compatible = "goodix,gt9271";
 		reg = <0x5d>;
 
-		interrupts-extended = <41 IRQ_TYPE_EDGE_FALLING>;
+		//interrupts-extended = <41 IRQ_TYPE_EDGE_FALLING>;
+		
+		interrupt-parent = <&tlmm>;
+		interrupts = <41 IRQ_TYPE_EDGE_FALLING>;
+		
 		reset-gpios = <&tlmm 40 GPIO_ACTIVE_LOW>;
 
 		AVDD28-supply = <&pm8937_l17>;
@@ -253,7 +258,7 @@
 		clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
 		clock-frequency = <19200000>;
 
-		pinctrl-0 = <&cam_sensor_rear_default &camss_mclk0_default>;
+		pinctrl-0 = <&cam_sensor_rear_default &cam_sensor_vdig_default &camss_mclk0_default>;
 		pinctrl-names = "default";
 		assigned-clock-rates = <19200000>;
 
@@ -261,7 +266,7 @@
 
 		dovdd-supply = <&pm8937_l6>;  // 1.8V
 		avdd-supply = <&pm8937_l22>;  // 2.8V
-		dvdd-supply = <&cam_vdig_reg>; // GPIO 62
+		dvdd-supply = <&pm8937_l23>; // 1.2V
 
 		orientation = <1>;
 		rotation = <90>;
@@ -586,6 +591,15 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
+		output-high;
+	};
+
+	cam_sensor_vdig_default: cam-sensor-vdig-default-state {
+		pins = "gpio62";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+		output-high;
 	};
 
 	gpio_keys_default: gpio-keys-default-state {
