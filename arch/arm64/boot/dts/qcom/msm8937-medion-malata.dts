@@ -91,9 +91,10 @@
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 
-		pinctrl-0 = <&headphones_switch_default>;
-		pinctrl-names = "default";
 		VCC-supply = <&pm8937_l17>;
+		pinctrl-0 = <&headphones_switch_default>;
+		pinctrl-1 = <&headphones_switch_sleep>;
+		pinctrl-names = "default","sleep";
 
 		sound-name-prefix = "Headphones Switch";
 	};
@@ -528,12 +529,12 @@
 	audio-routing =
 		"Speaker", "Speaker Amp OUTL",
 		"Speaker", "Speaker Amp OUTR",
-		"Speaker Amp INL", "HPH_L",
-		"Speaker Amp INR", "HPH_R",
+		"Speaker Amp INL", "HPHL",
+		"Speaker Amp INR", "HPHR",
 		"Headphones", "Headphones Switch OUTL",
 		"Headphones", "Headphones Switch OUTR",
-		"Headphones Switch INL", "HPH_L",
-		"Headphones Switch INR", "HPH_R",
+		"Headphones Switch INL", "HPHL",
+		"Headphones Switch INR", "HPHR",
 		"AMIC1", "MIC BIAS External1",
 		"AMIC2", "MIC BIAS Internal2",
 		"AMIC3", "MIC BIAS External1",
@@ -577,9 +578,9 @@
 		pins = "gpio32";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
+		//bias-disable;
 		//bias-pull-up;
-		//output-high;
+		output-high;
 	};
 
 	headphones_switch_sleep: headphones-switch-sleep-state {
