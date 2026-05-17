@@ -87,7 +87,7 @@
 		};
 	};
 
-	headphones_switch: audio-switch {
+	/*headphones_switch: audio-switch {
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 
@@ -97,7 +97,7 @@
 		pinctrl-names = "default","sleep";
 
 		sound-name-prefix = "Headphones Switch";
-	};
+	};*/
 
 	speaker_amp: audio-amplifier {
 		compatible = "simple-audio-amplifier";
@@ -177,7 +177,7 @@
 	status = "okay";
 };
 
-/*&blsp2_i2c1 {
+&blsp2_i2c1 {
 	status = "okay";
 
 	headphones_switch: amp@60 {
@@ -187,13 +187,13 @@
 		Vdd-supply = <&pm8937_l17>;
 		power-gpio = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 
-		pinctrl-names = "default","sleep";
 		pinctrl-0 = <&headphones_switch_default>;
 		pinctrl-1 = <&headphones_switch_sleep>;
+		pinctrl-names = "default","sleep";
 
 		sound-name-prefix = "Headphones Switch";
 	};
-};*/
+};
 
 &camss {
 	compatible = "qcom,msm8937-camss";
@@ -651,9 +651,12 @@
 
 &wcd_codec {
 	qcom,hphl-jack-type-normally-open;
-	//qcom,micbias-lvl = <2800>;
-	qcom,mbhc-vthreshold-high = <75 225 450 510 540>;
-	qcom,mbhc-vthreshold-low = <25 200 325 500 530>;
+
+	qcom,mbhc-vthreshold-low = <75 150 237 450 500>;
+	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
+
+	#qcom,mbhc-vthreshold-high = <75 225 450 510 540>;
+	#qcom,mbhc-vthreshold-low = <25 200 325 500 530>;
 	qcom,micbias1-ext-cap;
 
 	vdd-cdc-io-supply = <&pm8937_l5>;
