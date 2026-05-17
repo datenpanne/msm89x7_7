@@ -176,7 +176,7 @@
 &blsp1_uart2 {
 	status = "okay";
 };
-
+/*
 &blsp2_i2c1 {
 	status = "okay";
 
@@ -185,7 +185,7 @@
 		reg = <0x60>;
 
 		Vdd-supply = <&pm8937_l17>;
-		power-gpio = <&tlmm 32 GPIO_ACTIVE_HIGH>;
+		power-gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 
 		pinctrl-0 = <&headphones_switch_default>;
 		pinctrl-1 = <&headphones_switch_sleep>;
@@ -193,7 +193,7 @@
 
 		sound-name-prefix = "Headphones Switch";
 	};
-};
+};*/
 
 &camss {
 	compatible = "qcom,msm8937-camss";
@@ -525,16 +525,14 @@
 	widgets =
 		"Speaker", "Speaker",
 		"Headphone", "Headphones";
-	pin-switches = "Speaker", "Headphones";
+	pin-switches = "Speaker";
 	audio-routing =
 		"Speaker", "Speaker Amp OUTL",
 		"Speaker", "Speaker Amp OUTR",
 		"Speaker Amp INL", "HPHL",
 		"Speaker Amp INR", "HPHR",
-		"Headphones", "Headphones Switch HPLEFT",
-		"Headphones", "Headphones Switch HPRIGHT",
-		"Headphones Switch LEFTIN", "HPHL",
-		"Headphones Switch RIGHTIN", "HPHR",
+		"Headphones", "HPHL",
+		"Headphones", "HPHR",
 		"AMIC1", "MIC BIAS External1",
 		"AMIC2", "MIC BIAS Internal2",
 		"AMIC3", "MIC BIAS External1",
@@ -543,7 +541,7 @@
 		"MM_DL4", "MultiMedia4 Playback",
 		"MultiMedia2 Capture", "MM_UL2";
 
-	aux-devs = <&speaker_amp>, <&headphones_switch>;
+	aux-devs = <&speaker_amp>;
 	
 	status = "okay";
 };
