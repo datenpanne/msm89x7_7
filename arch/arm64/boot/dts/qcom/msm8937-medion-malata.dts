@@ -59,9 +59,14 @@
 		compatible = "pwm-backlight";
 		pwms = <&pm8937_pwm 0 100000>;
 
+		enable-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
+
 		brightness-levels = <0 255>;
 		num-interpolated-steps = <255>;
-		default-brightness-level = <128>;
+		default-brightness-level = <255>;
+		
+		pinctrl-0 = <&backlight_en_default>;
+		pinctrl-names = "default";
 	};
 
 	battery: battery {
@@ -87,26 +92,11 @@
 		};
 	};
 
-	/*headphones_switch: audio-switch {
-		compatible = "simple-audio-amplifier";
-		enable-gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
-
-		VCC-supply = <&pm8937_l17>;
-		pinctrl-0 = <&headphones_switch_default>;
-		pinctrl-1 = <&headphones_switch_sleep>;
-		pinctrl-names = "default","sleep";
-
-		sound-name-prefix = "Headphones Switch";
-	};*/
-
 	speaker_amp: audio-amplifier {
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
-
 		pinctrl-0 = <&speaker_amp_default>;
-		pinctrl-1 = <&speaker_amp_sleep>;
-		pinctrl-names = "default","sleep";
-
+		pinctrl-names = "default";
 		sound-name-prefix = "Speaker Amp";
 	};
 
@@ -176,24 +166,6 @@
 &blsp1_uart2 {
 	status = "okay";
 };
-/*
-&blsp2_i2c1 {
-	status = "okay";
-
-	headphones_switch: amp@60 {
-		compatible = "ti,tpa6130a2";
-		reg = <0x60>;
-
-		Vdd-supply = <&pm8937_l17>;
-		power-gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
-
-		pinctrl-0 = <&headphones_switch_default>;
-		pinctrl-1 = <&headphones_switch_sleep>;
-		pinctrl-names = "default","sleep";
-
-		sound-name-prefix = "Headphones Switch";
-	};
-};*/
 
 &camss {
 	compatible = "qcom,msm8937-camss";
@@ -271,6 +243,19 @@
 
 	status = "okay";
 
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@1 {
+			reg = <1>;
+			mdss_dsi0_out: endpoint {
+				data-lanes = <0 1 2 3>;
+				remote-endpoint = <&panel_in>;
+			};
+		};
+	};
+
 	panel@0 {
 		compatible = "medion,malata-panel","malata,gama-wuxga";
 		reg = <0>;
@@ -280,7 +265,7 @@
 		vdd-supply = <&pm8937_l17>;
 		
 		enable-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
-		blen-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
+		//blen-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&tlmm 60 GPIO_ACTIVE_LOW>;
 
 		pinctrl-0 = <&panel_default>;
@@ -293,11 +278,11 @@
 		};
 	};
 };
-
+/*
 &mdss_dsi0_out {
 	data-lanes = <0 1 2 3>;
 	remote-endpoint = <&panel_in>;
-};
+};*/
 
 &mdss_dsi0_phy {
 	vddio-supply = <&pm8937_l6>;
@@ -565,6 +550,13 @@
 		output-high;
 	};*/
 
+	backlight_en_default: backlight-en-default-state {
+		pins = "gpio132";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
 	gpio_keys_default: gpio-keys-default-state {
 		pins = "gpio91";
 		function = "gpio";
@@ -572,26 +564,11 @@
 		bias-pull-up;
 	};
 
-	headphones_switch_default: headphones-switch-default-state {
-		pins = "gpio32";
-		function = "gpio";
-		drive-strength = <2>;
-		//bias-disable;
-		//bias-pull-up;
-		output-high;
-	};
-
-	headphones_switch_sleep: headphones-switch-sleep-state {
-		pins = "gpio32";
-		function = "gpio";
-		drive-strength = <2>;
-		output-low;
-	};
-
 	panel_default: panel-default-state {
-		pins = "gpio24","gpio60","gpio132";
+		pins = "gpio24","gpio60";//,"gpio132";
 		function = "gpio";
-		drive-strength = <10>;
+		drive-strength = <8>;
+		//drive-strength = <10>;
 		bias-pull-up;
 	};
 
@@ -605,16 +582,9 @@
 	speaker_amp_default: speaker-amp-default-state {
 		pins = "gpio85";
 		function = "gpio";
-		drive-strength = <2>;
+		drive-strength = <8>;
 		bias-pull-up;
 		output-high;
-	};
-
-	speaker_amp_sleep: speaker-amp-sleep-state {
-		pins = "gpio85";
-		function = "gpio";
-		drive-strength = <2>;
-		output-low;
 	};
 
 	touch_int_default: touch-int-default-state {

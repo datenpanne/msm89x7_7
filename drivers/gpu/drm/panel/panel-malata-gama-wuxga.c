@@ -100,9 +100,9 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 	//usleep_range(100, 150);
 
 	malata_gama_wuxga_reset(ctx);
-	msleep(120);
+	msleep(80);
 
-	gpiod_set_value(ctx->blen_gpio, 1);
+	//gpiod_set_value(ctx->blen_gpio, 1);
 
 	ret = malata_gama_wuxga_on(ctx);
 	if (ret < 0) {
@@ -126,8 +126,8 @@ static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
 		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
 	}
 
-	gpiod_set_value_cansleep(ctx->blen_gpio, 0);
-	msleep(50);
+	//gpiod_set_value_cansleep(ctx->blen_gpio, 0);
+	//msleep(50);
 	//usleep_range(1000, 2000);
 	
 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
@@ -189,10 +189,10 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 	if (ret < 0)
 		return ret;
 
-	ctx->blen_gpio = devm_gpiod_get(dev, "blen", GPIOD_OUT_LOW);
+	/*ctx->blen_gpio = devm_gpiod_get(dev, "blen", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->blen_gpio))
 		return dev_err_probe(dev, PTR_ERR(ctx->blen_gpio),
-				     "Failed to get backlight-enable-gpios\n");
+				     "Failed to get backlight-enable-gpios\n");*/
 
 	ctx->enable_gpio = devm_gpiod_get(dev, "enable", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->enable_gpio))
@@ -209,7 +209,7 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 
 	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE | MIPI_DSI_MODE_LPM;
+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE;// | MIPI_DSI_MODE_LPM;
 
 	ctx->panel.prepare_prev_first = true;
 
