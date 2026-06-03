@@ -83,6 +83,7 @@ static int malata_gama_wuxga_off(struct malata_gama_wuxga *ctx)
 static int malata_gama_wuxga_disable(struct drm_panel *panel)
 {
 	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
+	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
 	struct device *dev = &ctx->dsi->dev;
 	int ret;
 
@@ -90,7 +91,7 @@ static int malata_gama_wuxga_disable(struct drm_panel *panel)
 	if (ret < 0) {
 		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
 	}
-	mipi_dsi_msleep(&ctx, 150);
+	mipi_dsi_msleep(&dsi_ctx, 150);
 
 	return 0;
 }
