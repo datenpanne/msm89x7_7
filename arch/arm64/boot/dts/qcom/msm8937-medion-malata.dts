@@ -91,7 +91,10 @@
 			debounce-interval = <15>;
 		};
 	};
-
+	/*
+	 * We bitbang on &i2c_4 because BLSP is protected by TZ as sensors are
+	 * normally proxied via ADSP firmware. GPIOs aren't protected.
+	 */
 	i2c-sensors {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 14 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
@@ -99,6 +102,9 @@
 		i2c-gpio,delay-us = <2>;
 		#address-cells = <1>;
 		#size-cells = <0>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&i2c_sensors_pins>;
 
 		imu@18 {
 			compatible = "bosch,bma255";
@@ -110,8 +116,8 @@
 			vddio-supply = <&pm8937_l6>;
 
 			mount-matrix = "0", "-1", "0",
-					"1", "0", "0",
-					"0", "0", "1";
+				       "1", "0", "0",
+				       "0", "0", "1";
 		};
 	};
 
@@ -582,6 +588,13 @@
 
 	gpio_keys_default: gpio-keys-default-state {
 		pins = "gpio91";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+
+	i2c_sensors_pins: i2c-sensors-pins {
+		pins = "gpio14", "gpio15";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-pull-up;
