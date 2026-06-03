@@ -92,6 +92,29 @@
 		};
 	};
 
+	i2c-sensors {
+		compatible = "i2c-gpio";
+		sda-gpios = <&tlmm 14 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&tlmm 15 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		imu@18 {
+			compatible = "bosch,bma255";
+			reg = <0x18>;
+
+			interrupts-extended = <&tlmm 41 IRQ_TYPE_EDGE_RISING>;
+
+			vdd-supply = <&pm8937_l10>;
+			vddio-supply = <&pm8937_l6>;
+
+			mount-matrix = "0", "-1", "0",
+					"1", "0", "0",
+					"0", "0", "1";
+		};
+	};
+
 	speaker_amp: audio-amplifier {
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
@@ -620,11 +643,11 @@
 &wcd_codec {
 	qcom,hphl-jack-type-normally-open;
 
-	qcom,mbhc-vthreshold-low = <75 150 237 450 500>;
-	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
+	#qcom,mbhc-vthreshold-low = <75 150 237 450 500>;
+	#qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
 
-	#qcom,mbhc-vthreshold-high = <75 225 450 510 540>;
-	#qcom,mbhc-vthreshold-low = <25 200 325 500 530>;
+	qcom,mbhc-vthreshold-high = <75 225 450 510 540>;
+	qcom,mbhc-vthreshold-low = <25 200 325 500 530>;
 	qcom,micbias1-ext-cap;
 
 	vdd-cdc-io-supply = <&pm8937_l5>;

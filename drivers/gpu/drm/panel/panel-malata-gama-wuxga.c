@@ -22,7 +22,6 @@ struct malata_gama_wuxga {
 	struct regulator_bulk_data *supplies;
 	struct gpio_desc *reset_gpio;
 	struct gpio_desc *enable_gpio;
-	struct gpio_desc *blen_gpio;
 };
 
 static const struct regulator_bulk_data malata_gama_wuxga_supplies[] = {
@@ -81,10 +80,44 @@ static int malata_gama_wuxga_off(struct malata_gama_wuxga *ctx)
 	return dsi_ctx.accum_err;
 }
 
+static int malata_gama_wuxga_disable(struct drm_panel *panel)
+{
+	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
+	struct device *dev = &ctx->dsi->dev;
+	int ret;
+
+	ret = malata_gama_wuxga_off(ctx);
+	if (ret < 0) {
+		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
+	}
+	mipi_dsi_msleep(&ctx, 150);
+
+	return 0;
+}
+
+static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
+{
+	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
+	//struct device *dev = &ctx->dsi->dev;
+	//int ret;
+	
+	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+	msleep(30);
+
+	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
+	msleep(15);
+
+	regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
+	usleep_range(1000, 2000);
+
+	return 0;
+}
+
+
 static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 {
 	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
-	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
+	//struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
 	struct device *dev = &ctx->dsi->dev;
 	int ret;
 
@@ -97,13 +130,20 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 
 	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
 	msleep(20);
-	//usleep_range(100, 150);
 
 	malata_gama_wuxga_reset(ctx);
-	msleep(80);
+	//msleep(80);
+	
+	return 0;
+}
 
-	//gpiod_set_value(ctx->blen_gpio, 1);
+static int malata_gama_wuxga_enable(struct drm_panel *panel)
+{
+	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
+	struct device *dev = &ctx->dsi->dev;
+	int ret;
 
+	msleep(120);
 	ret = malata_gama_wuxga_on(ctx);
 	if (ret < 0) {
 		dev_err(dev, "Failed to initialize panel: %d\n", ret);
@@ -111,34 +151,6 @@ static int malata_gama_wuxga_prepare(struct drm_panel *panel)
 		regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
 		return ret;
 	}
-	
-	return 0;
-}
-
-static int malata_gama_wuxga_unprepare(struct drm_panel *panel)
-{
-	struct malata_gama_wuxga *ctx = to_malata_gama_wuxga(panel);
-	struct device *dev = &ctx->dsi->dev;
-	int ret;
-
-	ret = malata_gama_wuxga_off(ctx);
-	if (ret < 0) {
-		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
-	}
-
-	//gpiod_set_value_cansleep(ctx->blen_gpio, 0);
-	//msleep(50);
-	//usleep_range(1000, 2000);
-	
-	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-	//usleep_range(1000, 3000);
-	msleep(30);
-
-	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
-	msleep(15);
-
-	regulator_bulk_disable(ARRAY_SIZE(malata_gama_wuxga_supplies), ctx->supplies);
-	usleep_range(1000, 2000);
 
 	return 0;
 }
@@ -165,8 +177,10 @@ static int malata_gama_wuxga_get_modes(struct drm_panel *panel,
 }
 
 static const struct drm_panel_funcs malata_gama_wuxga_panel_funcs = {
-	.prepare = malata_gama_wuxga_prepare,
+	.disable = malata_gama_wuxga_disable,
 	.unprepare = malata_gama_wuxga_unprepare,
+	.prepare = malata_gama_wuxga_prepare,
+	.enable = malata_gama_wuxga_enable,
 	.get_modes = malata_gama_wuxga_get_modes,
 };
 
@@ -189,11 +203,6 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 	if (ret < 0)
 		return ret;
 
-	/*ctx->blen_gpio = devm_gpiod_get(dev, "blen", GPIOD_OUT_LOW);
-	if (IS_ERR(ctx->blen_gpio))
-		return dev_err_probe(dev, PTR_ERR(ctx->blen_gpio),
-				     "Failed to get backlight-enable-gpios\n");*/
-
 	ctx->enable_gpio = devm_gpiod_get(dev, "enable", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->enable_gpio))
 		return dev_err_probe(dev, PTR_ERR(ctx->enable_gpio),
@@ -209,7 +218,7 @@ static int malata_gama_wuxga_probe(struct mipi_dsi_device *dsi)
 
 	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE;// | MIPI_DSI_MODE_LPM;
+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE | MIPI_DSI_MODE_LPM;
 
 	ctx->panel.prepare_prev_first = true;
 
