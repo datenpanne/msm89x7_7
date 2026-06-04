@@ -99,7 +99,7 @@
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 14 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		scl-gpios = <&tlmm 15 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
-		i2c-gpio,delay-us = <2>;
+		i2c-gpio,delay-us = <4>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 
@@ -294,7 +294,6 @@
 		vdd-supply = <&pm8937_l17>;
 		
 		enable-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
-		//blen-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&tlmm 60 GPIO_ACTIVE_LOW>;
 
 		pinctrl-0 = <&panel_default>;
@@ -597,7 +596,7 @@
 		pins = "gpio14", "gpio15";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-pull-up;
+		bias-disable;
 	};
 
 	panel_default: panel-default-state {
