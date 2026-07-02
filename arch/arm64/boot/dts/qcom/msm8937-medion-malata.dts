@@ -57,6 +57,20 @@
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pm8937_pwm 0 100000>;
+		enable-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
+		brightness-levels = <0 255>;
+		num-interpolated-steps = <255>;
+		default-brightness-level = <255>;
+
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&backlight_en_default &pm8937_mpp4_backlight>;
+		pinctrl-1 = <&pm8937_mpp4_sleep>;
+	};
+
+/*
+	backlight: backlight {
+		compatible = "pwm-backlight";
+		pwms = <&pm8937_pwm 0 100000>;
 
 		enable-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
 
@@ -66,7 +80,7 @@
 		
 		pinctrl-0 = <&backlight_en_default>;
 		pinctrl-names = "default";
-	};
+	};*/
 
 	battery: battery {
 		compatible = "simple-battery";
