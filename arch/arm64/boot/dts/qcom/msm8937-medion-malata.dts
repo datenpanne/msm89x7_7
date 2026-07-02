@@ -61,26 +61,9 @@
 		brightness-levels = <0 255>;
 		num-interpolated-steps = <255>;
 		default-brightness-level = <255>;
-
-		pinctrl-names = "default", "sleep";
-		pinctrl-0 = <&backlight_en_default &pm8937_mpp4_backlight>;
-		pinctrl-1 = <&pm8937_mpp4_sleep>;
-	};
-
-/*
-	backlight: backlight {
-		compatible = "pwm-backlight";
-		pwms = <&pm8937_pwm 0 100000>;
-
-		enable-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
-
-		brightness-levels = <0 255>;
-		num-interpolated-steps = <255>;
-		default-brightness-level = <255>;
-		
 		pinctrl-0 = <&backlight_en_default>;
 		pinctrl-names = "default";
-	};*/
+	};
 
 	battery: battery {
 		compatible = "simple-battery";
@@ -318,7 +301,8 @@
 		output-low;
 		qcom,dtest = <2>; //qcom,src-sel = <0x05>
 	};*/
-	pm8937_mpp4_backlight: mpp4-active-state {
+	
+	pm8937_mpp4_default: mpp4-default-state {
 		pins = "mpp4";
 		function = "digital";
 		power-source = <PM8916_MPP_L5>;
@@ -335,8 +319,12 @@
 };
 
 &pm8937_pwm {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pm8937_mpp4_backlight>;
+	/*pinctrl-names = "default";
+	pinctrl-0 = <&pm8937_mpp4_backlight>;*/
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&pm8937_mpp4_default>;
+	pinctrl-1 = <&pm8937_mpp4_sleep>;
 
 	status = "okay";
 };
