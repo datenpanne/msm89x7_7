@@ -311,12 +311,25 @@
 		//qcom,dtest = <2>;
 	};*/
 
-	pm8937_mpp4_backlight: mpp4-state {
+	/*pm8937_mpp4_backlight: mpp4-state {
 		pins = "mpp4";
 		function = "digital";      /* qcom,mode = <0x01> */
 		power-source = <PM8916_MPP_L5>;        /* qcom,vin-sel (3 = L5) */
 		output-low;
 		qcom,dtest = <2>; /*qcom,src-sel = <0x05>*/
+	};*/
+	pm8937_mpp4_backlight: mpp4-active-state {
+		pins = "mpp4";
+		function = "dtest2"; 
+		power-source = <PM8916_MPP_L5>;
+		output-low; 
+	};
+
+	pm8937_mpp4_sleep: mpp4-sleep-state {
+		pins = "mpp4";
+		function = "digital";     /* Schaltet die DTEST/PWM-Quelle im Schlaf ab */
+		input-enable;             /* Setzt den Pin auf Input (hochohmig), um Strom zu sparen */
+		power-source = <PM8916_MPP_L5>;
 	};
 };
 
