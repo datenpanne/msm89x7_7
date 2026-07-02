@@ -53,15 +53,18 @@ static int malata_gama_wuxga_on(struct malata_gama_wuxga *ctx)
 
 	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
 
+	msleep(24);
+
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xb0, 0x00);
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xbf, 0x04);
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xc0, 0x00);
 
-	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
+	/*mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
 	mipi_dsi_msleep(&dsi_ctx, 120);
 
 	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
-	mipi_dsi_msleep(&dsi_ctx, 20);
+	mipi_dsi_msleep(&dsi_ctx, 20);*/
+	mipi_dsi_msleep(&dsi_ctx, 150);
 
 	return dsi_ctx.accum_err;
 }
@@ -91,7 +94,7 @@ static int malata_gama_wuxga_disable(struct drm_panel *panel)
 	if (ret < 0) {
 		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
 	}
-	mipi_dsi_msleep(&dsi_ctx, 150);
+	//mipi_dsi_msleep(&dsi_ctx, 150);
 
 	return 0;
 }
@@ -144,7 +147,7 @@ static int malata_gama_wuxga_enable(struct drm_panel *panel)
 	struct device *dev = &ctx->dsi->dev;
 	int ret;
 
-	msleep(120);
+	msleep(20);
 	ret = malata_gama_wuxga_on(ctx);
 	if (ret < 0) {
 		dev_err(dev, "Failed to initialize panel: %d\n", ret);

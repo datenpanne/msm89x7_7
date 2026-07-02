@@ -14,7 +14,7 @@
 #include "msm8937-qdsp6.dtsi"
 
 / {
-	model = "Medion P1061X (Malata)";
+	model = "Medion Lifetab P10610 (Malata)";
 	compatible = "medion,malata", "qcom,msm8937";
 	chassis-type = "tablet";
 
