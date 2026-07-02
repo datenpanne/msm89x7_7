@@ -320,9 +320,10 @@
 	};*/
 	pm8937_mpp4_backlight: mpp4-active-state {
 		pins = "mpp4";
-		function = "dtest2"; 
+		function = "digital";
 		power-source = <PM8916_MPP_L5>;
-		output-low; 
+		output-low;
+		qcom,dtest = <2>;
 	};
 
 	pm8937_mpp4_sleep: mpp4-sleep-state {
