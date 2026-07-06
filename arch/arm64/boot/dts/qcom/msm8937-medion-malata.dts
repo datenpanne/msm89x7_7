@@ -19,7 +19,7 @@
 	chassis-type = "tablet";
 
 	qcom,msm-id = <QCOM_ID_MSM8937 0>;
-	qcom,board-id = <0x0b 0x00>;
+	qcom,board-id = <QCOM_BOARD_ID(QRD, 1, 0) 0>;
 
 	aliases {
 		serial0 = &blsp1_uart2;
