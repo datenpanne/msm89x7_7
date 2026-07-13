@@ -67,7 +67,6 @@
 
 	battery: battery {
 		compatible = "simple-battery";
-
 		charge-full-design-microamp-hours = <6849000>;
 		constant-charge-current-max-microamp = <1000000>;
 		voltage-min-design-microvolt = <3500000>;
@@ -110,8 +109,9 @@
 		regulator-min-microvolt = <1200000>;
 		regulator-max-microvolt = <1200000>;
 		gpio = <&tlmm 62 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&cam_sensor_vdig_default>;
+		pinctrl-names = "default";
 		enable-active-high;
-		regulator-always-on;
 	};
 
 	vph_pwr: vph-pwr-regulator {
@@ -164,9 +164,8 @@
 };
 
 &camss {
-	compatible = "qcom,msm8937-camss";
 	vdda-supply = <&pm8937_l2>;
-	//status = "okay";
+	status = "okay";
 
 	ports {
 		port@0 {
@@ -185,7 +184,7 @@
 	pinctrl-0 = <&cci0_default>;
 	pinctrl-names = "default";
 
-	//status = "okay";
+	status = "okay";
 	
 };
 
@@ -198,8 +197,8 @@
 		clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
 		clock-frequency = <19200000>;
 
-		pinctrl-0 = <&cam_sensor_rear_default &camss_mclk0_default>;
 		pinctrl-names = "default";
+		pinctrl-0 = <&camss_mclk0_default &cam_sensor_rear_default &cam_sensor_rear_vdig>;
 		assigned-clock-rates = <19200000>;
 
 		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
@@ -208,7 +207,7 @@
 		avdd-supply = <&pm8937_l22>;  // 2.8V
 		dvdd-supply = <&cam_vdig_reg>; // GPIO62 1.2V
 
-		orientation = <1>;
+		orientation = <1>;/* 1 = Rear, 0 = Front */
 		rotation = <90>;
 
 		port {
@@ -557,13 +556,13 @@
 		output-high;
 	};
 
-	/*cam_sensor_vdig_default: cam-sensor-vdig-default-state {
+	cam_sensor_vdig_default: cam-sensor-vdig-default-state {
 		pins = "gpio62";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
 		output-high;
-	};*/
+	};
 
 	backlight_en_default: backlight-en-default-state {
 		pins = "gpio132";
