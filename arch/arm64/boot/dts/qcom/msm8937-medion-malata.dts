@@ -189,10 +189,10 @@
 };
 
 &cci_i2c0 {
-	camera-sensor@36 {
+	camera-sensor@10 {
 		compatible = "ovti,ov8856";
 
-		reg = <0x36>;
+		reg = <0x10>;
 
 		clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
 		clock-frequency = <19200000>;
