@@ -198,14 +198,19 @@
 		clock-frequency = <19200000>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&camss_mclk0_default &cam_sensor_rear_default>;
+		pinctrl-0 = <&camss_mclk0_default &cam_sensor_rear_default &cam_sensor_vdig_default>;
 		assigned-clock-rates = <19200000>;
 
 		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
+		powerdown-gpios = <&tlmm 36 GPIO_ACTIVE_HIGH>;
 
-		dovdd-supply = <&pm8937_l6>;  // 1.8V
+		/*dovdd-supply = <&pm8937_l6>;  // 1.8V
 		avdd-supply = <&pm8937_l22>;  // 2.8V
-		dvdd-supply = <&cam_vdig_reg>; // GPIO62 1.2V
+		dvdd-supply = <&cam_vdig_reg>; // GPIO62 1.2V*/
+		
+		avdd-supply= <&pm8937_l22>;
+		dvdd-supply = <&pm8937_l23>;
+		dovdd-supply = <&pm8937_l6>;
 
 		orientation = <1>;/* 1 = Rear, 0 = Front */
 		rotation = <90>;
@@ -553,7 +558,7 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-		output-high;
+		//output-high;
 	};
 
 	cam_sensor_vdig_default: cam-sensor-vdig-default-state {
