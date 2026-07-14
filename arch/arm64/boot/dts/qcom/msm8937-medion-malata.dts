@@ -208,7 +208,7 @@
 		dvdd-supply = <&cam_vdig_reg>; // GPIO62 1.2V
 
 		orientation = <1>;
-		rotation = <180>;
+		rotation = <0>;
 
 		port {
 			rear_cam_ep: endpoint {
@@ -279,46 +279,24 @@
 };
 
 &pm8937_mpps {
-	pm8937_mpp2_led: mpp2-state {
+	pm8937_mpp2_led: mpp2-led-state {
 		pins = "mpp2";
-		function = "sink";
-
+		function = "digital"; // Downstream "sink" entspricht meist "digital" oder "mpp" im Mainline-Treiber
 		output-low;
-		//qcom,dtest = <2>;
 	};
 
-	/*pm8937_mpp4_backlight: mpp4-state {
-		pins = "mpp4";
-		function = "digital";      // qcom,mode = <0x01>
-		power-source = <PM8916_MPP_L5>;        // qcom,vin-sel (3 = L5)
-		output-low;
-		qcom,dtest = <2>; //qcom,src-sel = <0x05>
-	};*/
-	
-	pm8937_mpp4_default: mpp4-default-state {
+	pm8937_mpp4_backlight: mpp4-state {
 		pins = "mpp4";
 		function = "digital";
 		power-source = <PM8916_MPP_L5>;
 		output-low;
 		qcom,dtest = <2>;
 	};
-
-	pm8937_mpp4_sleep: mpp4-sleep-state {
-		pins = "mpp4";
-		function = "digital";     /* Schaltet die DTEST/PWM-Quelle im Schlaf ab */
-		input-enable;             /* Setzt den Pin auf Input (hochohmig), um Strom zu sparen */
-		power-source = <PM8916_MPP_L5>;
-	};
 };
 
 &pm8937_pwm {
-	/*pinctrl-names = "default";
-	pinctrl-0 = <&pm8937_mpp4_backlight>;*/
-
-	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&pm8937_mpp4_default>;
-	pinctrl-1 = <&pm8937_mpp4_sleep>;
-
+	pinctrl-names = "default";
+	pinctrl-0 = <&pm8937_mpp4_backlight>;
 	status = "okay";
 };
 
@@ -347,18 +325,25 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pm8937_mpp2_led>;
 
-	qcom,power-source = <1>;
+	//qcom,power-source = <1>;
 
 	status = "okay";
-	
-	led@1 {
-		reg = <1>;
-		color = <LED_COLOR_ID_GREEN>;
-		function = LED_FUNCTION_HEARTBEAT;
-		function-enumerator = <1>;
 
-		linux,default-trigger = "heartbeat";
-		default-state = "off";
+	leds {
+		compatible = "gpio-leds"; // Wenn direkt über GPIO geschaltet
+
+		/* Falls der Treiber intern direkt PWM/LPG-Kanäle anspricht: */
+		green-led {
+			// Falls der Mainline-LPG-Treiber Subnodes nutzt, entfällt compatible im Unterknoten
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_HEARTBEAT;
+			
+			// Hier verknüpfen wir den Pin aus dem PMIC-MPP-Controller
+			gpios = <&pm8937_mpps 2 GPIO_ACTIVE_HIGH>; 
+
+			linux,default-trigger = "heartbeat";
+			default-state = "off";
+		};
 	};
 };
 
@@ -553,7 +538,6 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-		//output-high;
 	};
 
 	backlight_en_default: backlight-en-default-state {
