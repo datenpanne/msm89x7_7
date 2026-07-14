@@ -360,7 +360,7 @@
 		linux,default-trigger = "heartbeat";
 		default-state = "off";
 	};
-}
+};
 
 &pmi8950_smbcharger {
 	monitored-battery = <&battery>;
