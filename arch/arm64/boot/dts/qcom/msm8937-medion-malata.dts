@@ -73,6 +73,18 @@
 		voltage-max-design-microvolt = <4300000>;
 	};
 
+	cam_vdig_reg: cam-vdig-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "cam_vdig";
+		vin-supply = <&pm8937_l23>;
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+		gpio = <&tlmm 62 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&cam_sensor_vdig_default>;
+		pinctrl-names = "default";
+		enable-active-high;
+	};
+
 	gpio-keys {
 		compatible = "gpio-keys";
 
@@ -87,14 +99,6 @@
 		};
 	};
 
-	speaker_amp: audio-amplifier {
-		compatible = "simple-audio-amplifier";
-		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
-		pinctrl-0 = <&speaker_amp_default>;
-		pinctrl-names = "default";
-		sound-name-prefix = "Speaker Amp";
-	};
-
 	reserved-memory {
 		framebuffer: memory@90001000 {
 			reg = <0x0 0x90001000 0x0 (1200 * 1920 * 3)>;
@@ -102,16 +106,12 @@
 		};
 	};
 
-	cam_vdig_reg: cam-vdig-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "cam_vdig";
-		vin-supply = <&pm8937_l23>;
-		regulator-min-microvolt = <1200000>;
-		regulator-max-microvolt = <1200000>;
-		gpio = <&tlmm 62 GPIO_ACTIVE_HIGH>;
-		pinctrl-0 = <&cam_sensor_vdig_default>;
+	speaker_amp: audio-amplifier {
+		compatible = "simple-audio-amplifier";
+		enable-gpios = <&tlmm 85 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&speaker_amp_default>;
 		pinctrl-names = "default";
-		enable-active-high;
+		sound-name-prefix = "Speaker Amp";
 	};
 
 	vph_pwr: vph-pwr-regulator {
@@ -202,14 +202,13 @@
 		assigned-clock-rates = <19200000>;
 
 		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
-		//powerdown-gpios = <&tlmm 36 GPIO_ACTIVE_LOW>;
 
 		dovdd-supply = <&pm8937_l6>;  // 1.8V
 		avdd-supply = <&pm8937_l22>;  // 2.8V
 		dvdd-supply = <&cam_vdig_reg>; // GPIO62 1.2V
 
 		orientation = <1>;
-		rotation = <0>;
+		rotation = <180>;
 
 		port {
 			rear_cam_ep: endpoint {
@@ -273,11 +272,6 @@
 		};
 	};
 };
-/*
-&mdss_dsi0_out {
-	data-lanes = <0 1 2 3>;
-	remote-endpoint = <&panel_in>;
-};*/
 
 &mdss_dsi0_phy {
 	vddio-supply = <&pm8937_l6>;
@@ -285,13 +279,13 @@
 };
 
 &pm8937_mpps {
-	/*pm8937_mpp2_led: mpp2-state {
+	pm8937_mpp2_led: mpp2-state {
 		pins = "mpp2";
 		function = "sink";
 
 		output-low;
 		//qcom,dtest = <2>;
-	};*/
+	};
 
 	/*pm8937_mpp4_backlight: mpp4-state {
 		pins = "mpp4";
@@ -348,7 +342,7 @@
 	power-supplies = <&pmi8950_smbcharger>;
 	status = "okay";
 };
-/*
+
 &pmi8950_pwm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pm8937_mpp2_led>;
@@ -366,7 +360,7 @@
 		linux,default-trigger = "heartbeat";
 		default-state = "off";
 	};
-}*/
+}
 
 &pmi8950_smbcharger {
 	monitored-battery = <&battery>;
@@ -559,7 +553,7 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-		output-high;
+		//output-high;
 	};
 
 	backlight_en_default: backlight-en-default-state {
@@ -576,19 +570,10 @@
 		bias-pull-up;
 	};
 
-	i2c_sensors_pins: i2c-sensors-pins {
-		pins = "gpio14", "gpio15";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-up;
-		//bias-disable;
-	};
-
 	panel_default: panel-default-state {
-		pins = "gpio24","gpio60";//,"gpio132";
+		pins = "gpio24","gpio60";
 		function = "gpio";
 		drive-strength = <8>;
-		//drive-strength = <10>;
 		bias-pull-up;
 	};
 
