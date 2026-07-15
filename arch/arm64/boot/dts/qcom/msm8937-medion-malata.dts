@@ -99,6 +99,21 @@
 		};
 	};
 
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		pinctrl-0 = <&pm8937_mpp2_led>;
+		pinctrl-names = "default";
+
+		led-0 {
+			gpios = <&pm8937_mpps 2 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_HEARTBEAT;
+			linux,default-trigger = "heartbeat";
+			default-state = "off";
+		};
+	};
+
 	reserved-memory {
 		framebuffer: memory@90001000 {
 			reg = <0x0 0x90001000 0x0 (1200 * 1920 * 3)>;
@@ -202,6 +217,7 @@
 		assigned-clock-rates = <19200000>;
 
 		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
+		powerdown-gpios = <&tlmm 36 GPIO_ACTIVE_LOW>;
 
 		dovdd-supply = <&pm8937_l6>;  // 1.8V
 		avdd-supply = <&pm8937_l22>;  // 2.8V
@@ -323,7 +339,7 @@
 	power-supplies = <&pmi8950_smbcharger>;
 	status = "okay";
 };
-
+/*
 &pmi8950_pwm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pm8937_mpp2_led>;
@@ -337,7 +353,7 @@
 		linux,default-trigger = "heartbeat";
 		default-state = "off";
 	};
-};
+};*/
 
 &pmi8950_smbcharger {
 	monitored-battery = <&battery>;
