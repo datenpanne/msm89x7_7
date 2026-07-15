@@ -325,21 +325,17 @@
 };
 
 &pmi8950_pwm {
-	pinctrl-0 = <&pm8937_mpp2_led>;
 	pinctrl-names = "default";
-	//qcom,power-source = <1>;
+	pinctrl-0 = <&pm8937_mpp2_led>;
 	status = "okay";
 
 	led@6 {
-		reg = <6>;
-			color = <LED_COLOR_ID_GREEN>;
-			function = LED_FUNCTION_HEARTBEAT;
+		reg = <6>; 
+		color = <LED_COLOR_ID_GREEN>;
+		function = LED_FUNCTION_HEARTBEAT;
 
-			gpios = <&pm8937_mpps 2 GPIO_ACTIVE_HIGH>; 
-
-			linux,default-trigger = "heartbeat";
-			default-state = "off";
-		};
+		linux,default-trigger = "heartbeat";
+		default-state = "off";
 	};
 };
 
