@@ -151,12 +151,16 @@
 		AVDD28-supply = <&pm8937_l17>;
 		VDDIO-supply = <&pm8937_l6>;
 
-		pinctrl-names = "default";
 		pinctrl-0 = <&touch_int_default &touch_rst_default>;
+		pinctrl-names = "default";
 
 		touchscreen-inverted-y;
 		touchscreen-swapped-x-y;
 	};
+};
+
+&blsp1_i2c2{
+	/*pericom-type-c@3d*/
 };
 
 &blsp1_uart2 {
@@ -183,7 +187,6 @@
 &cci {
 	pinctrl-0 = <&cci0_default>;
 	pinctrl-names = "default";
-
 	status = "okay";
 	
 };
@@ -191,14 +194,11 @@
 &cci_i2c0 {
 	camera-sensor@36 {
 		compatible = "ovti,ov8856";
-
 		reg = <0x36>;
 
 		clocks = <&gcc GCC_CAMSS_MCLK0_CLK>;
 		clock-names = "xvclk";
 
-		pinctrl-names = "default";
-		pinctrl-0 = <&camss_mclk0_default &cam_sensor_rear_default>;
 		assigned-clock-rates = <19200000>;
 
 		reset-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
@@ -207,8 +207,11 @@
 		avdd-supply = <&pm8937_l22>;  // 2.8V
 		dvdd-supply = <&cam_vdig_reg>; // GPIO62 1.2V
 
+		pinctrl-0 = <&camss_mclk0_default &cam_sensor_rear_default>;
+		pinctrl-names = "default";
+
 		orientation = <1>;
-		rotation = <0>;
+		rotation = <270>;
 
 		port {
 			rear_cam_ep: endpoint {
@@ -235,7 +238,6 @@
 &mdss_dsi0 {
 	vdda-supply = <&pm8937_l2>;
 	vddio-supply = <&pm8937_l6>;
-
 	status = "okay";
 
 	ports {
@@ -252,15 +254,16 @@
 	};
 
 	panel@0 {
-		compatible = "medion,malata-panel","malata,gama-wuxga";
+		compatible = "medion,malata-panel";//,"malata,gama-wuxga";
 		reg = <0>;
 
-		backlight = <&backlight>;
 		vddio-supply = <&pm8937_l6>;
 		vdd-supply = <&pm8937_l17>;
 		
 		enable-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&tlmm 60 GPIO_ACTIVE_LOW>;
+
+		backlight = <&backlight>;
 
 		pinctrl-0 = <&panel_default>;
 		pinctrl-names = "default";
@@ -279,13 +282,13 @@
 };
 
 &pm8937_mpps {
-	pm8937_mpp2_led: mpp2-led-state {
+	pm8937_mpp2_led: mpp2-default-state {
 		pins = "mpp2";
-		function = "digital"; // Downstream "sink" entspricht meist "digital" oder "mpp" im Mainline-Treiber
+		function = "digital";
 		output-low;
 	};
 
-	pm8937_mpp4_backlight: mpp4-state {
+	pm8937_mpp4_backlight: mpp4-default-state {
 		pins = "mpp4";
 		function = "digital";
 		power-source = <PM8916_MPP_L5>;
@@ -295,8 +298,8 @@
 };
 
 &pm8937_pwm {
-	pinctrl-names = "default";
 	pinctrl-0 = <&pm8937_mpp4_backlight>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
@@ -322,23 +325,16 @@
 };
 
 &pmi8950_pwm {
-	pinctrl-names = "default";
 	pinctrl-0 = <&pm8937_mpp2_led>;
-
+	pinctrl-names = "default";
 	//qcom,power-source = <1>;
-
 	status = "okay";
 
-	leds {
-		compatible = "gpio-leds"; // Wenn direkt über GPIO geschaltet
-
-		/* Falls der Treiber intern direkt PWM/LPG-Kanäle anspricht: */
-		green-led {
-			// Falls der Mainline-LPG-Treiber Subnodes nutzt, entfällt compatible im Unterknoten
+	led@6 {
+		reg = <6>;
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_HEARTBEAT;
-			
-			// Hier verknüpfen wir den Pin aus dem PMIC-MPP-Controller
+
 			gpios = <&pm8937_mpps 2 GPIO_ACTIVE_HIGH>; 
 
 			linux,default-trigger = "heartbeat";
@@ -477,7 +473,6 @@
 &sdhc_1 {
 	vmmc-supply = <&pm8937_l8>;
 	vqmmc-supply = <&pm8937_l5>;
-
 	status = "okay";
 };
 
@@ -485,10 +480,10 @@
 	cd-gpios = <&tlmm 67 GPIO_ACTIVE_LOW>;
 	vmmc-supply = <&pm8937_l11>;
 	vqmmc-supply = <&pm8937_l12>;
+
 	pinctrl-0 = <&sdc2_default &sdc2_cd_default>;
 	pinctrl-1 = <&sdc2_sleep &sdc2_cd_default>;
 	pinctrl-names = "default", "sleep";
-
 	status = "okay";
 };
 
@@ -517,9 +512,7 @@
 		"MM_DL3", "MultiMedia3 Playback",
 		"MM_DL4", "MultiMedia4 Playback",
 		"MultiMedia2 Capture", "MM_UL2";
-
-	aux-devs = <&speaker_amp>;
-	
+	aux-devs = <&speaker_amp>;	
 	status = "okay";
 };
 
@@ -608,7 +601,6 @@
 
 &wcd_codec {
 	qcom,hphl-jack-type-normally-open;
-
 	qcom,mbhc-vthreshold-high = <75 225 450 510 540>;
 	qcom,mbhc-vthreshold-low = <25 200 325 500 530>;
 	qcom,micbias1-ext-cap;
@@ -621,7 +613,6 @@
 
 &wcnss {
 	vddpx-supply = <&pm8937_l5>;
-
 	status = "okay";
 };
 
